@@ -101,7 +101,7 @@ const Login = () => {
                   Senha
                 </Label>
                 <Link
-                  to="#"
+                  to="/esqueci-senha"
                   className="text-sm text-secondary hover:text-secondary/80 transition-colors"
                 >
                   Esqueceu a senha?
