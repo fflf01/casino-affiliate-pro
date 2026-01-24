@@ -50,9 +50,11 @@ const Navbar = () => {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-            Login
-          </Button>
+          <Link to="/login">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              Login
+            </Button>
+          </Link>
           <Link to="/cadastro">
             <Button variant="neon" size="sm">
               Cadastrar
@@ -86,9 +88,11 @@ const Navbar = () => {
               Suporte
             </a>
             <div className="flex gap-4 pt-4 border-t border-border/50">
-              <Button variant="goldOutline" size="sm" className="flex-1">
-                Login
-              </Button>
+              <Link to="/login" className="flex-1">
+                <Button variant="goldOutline" size="sm" className="w-full">
+                  Login
+                </Button>
+              </Link>
               <Link to="/cadastro" className="flex-1">
                 <Button variant="neon" size="sm" className="w-full">
                   Cadastrar
