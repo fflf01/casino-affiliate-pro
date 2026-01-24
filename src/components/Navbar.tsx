@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Crown, Menu, X } from "lucide-react";
 
@@ -24,12 +25,12 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <Crown className="w-8 h-8 text-secondary" />
           <span className="text-xl font-display font-bold text-gradient-gold">
             CasinoAff
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
@@ -52,9 +53,11 @@ const Navbar = () => {
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             Login
           </Button>
-          <Button variant="neon" size="sm">
-            Cadastrar
-          </Button>
+          <Link to="/cadastro">
+            <Button variant="neon" size="sm">
+              Cadastrar
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -86,9 +89,11 @@ const Navbar = () => {
               <Button variant="goldOutline" size="sm" className="flex-1">
                 Login
               </Button>
-              <Button variant="neon" size="sm" className="flex-1">
-                Cadastrar
-              </Button>
+              <Link to="/cadastro" className="flex-1">
+                <Button variant="neon" size="sm" className="w-full">
+                  Cadastrar
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
