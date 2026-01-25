@@ -34,18 +34,18 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
+          <Link to="/como-funciona" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
             Como Funciona
-          </a>
-          <a href="#" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
+          </Link>
+          <Link to="/plataformas" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
             Plataformas
-          </a>
-          <a href="#" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
+          </Link>
+          <Link to="/comissoes" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
             Comissões
-          </a>
-          <a href="#" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
+          </Link>
+          <Link to="/suporte" className="text-sm text-muted-foreground hover:text-secondary transition-colors">
             Suporte
-          </a>
+          </Link>
         </div>
 
         {/* Desktop CTA */}
@@ -75,18 +75,18 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-lg border-b border-border/50 py-6">
           <div className="container mx-auto px-4 flex flex-col gap-4">
-            <a href="#" className="text-foreground hover:text-secondary transition-colors py-2">
+            <Link to="/como-funciona" className="text-foreground hover:text-secondary transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Como Funciona
-            </a>
-            <a href="#" className="text-foreground hover:text-secondary transition-colors py-2">
+            </Link>
+            <Link to="/plataformas" className="text-foreground hover:text-secondary transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Plataformas
-            </a>
-            <a href="#" className="text-foreground hover:text-secondary transition-colors py-2">
+            </Link>
+            <Link to="/comissoes" className="text-foreground hover:text-secondary transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Comissões
-            </a>
-            <a href="#" className="text-foreground hover:text-secondary transition-colors py-2">
+            </Link>
+            <Link to="/suporte" className="text-foreground hover:text-secondary transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Suporte
-            </a>
+            </Link>
             <div className="flex gap-4 pt-4 border-t border-border/50">
               <Link to="/login" className="flex-1">
                 <Button variant="goldOutline" size="sm" className="w-full">
