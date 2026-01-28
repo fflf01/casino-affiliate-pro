@@ -13,6 +13,10 @@ import Plataformas from "./pages/Plataformas";
 import Comissoes from "./pages/Comissoes";
 import Suporte from "./pages/Suporte";
 import SuporteMensagens from "./pages/SuporteMensagens";
+import Links from "./pages/Links";
+import Carteira from "./pages/Carteira";
+import SuporteCliente from "./pages/SuporteCliente";
+import PlanosVip from "./pages/PlanosVip";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -33,6 +37,10 @@ const App = () => (
           <Route path="/comissoes" element={<Comissoes />} />
           <Route path="/suporte" element={<Suporte />} />
           <Route path="/suporte/mensagens" element={<SuporteMensagens />} />
+          <Route path="/links" element={<Links />} />
+          <Route path="/carteira" element={<Carteira />} />
+          <Route path="/suporte-cliente" element={<SuporteCliente />} />
+          <Route path="/planovips" element={<PlanosVip />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
