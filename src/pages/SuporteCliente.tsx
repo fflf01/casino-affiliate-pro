@@ -46,97 +46,9 @@ const SuporteCliente = () => {
   const [newTicketSubject, setNewTicketSubject] = useState("");
   const [newTicketMessage, setNewTicketMessage] = useState("");
 
-  const [tickets, setTickets] = useState<Ticket[]>([
-    {
-      id: "1",
-      subject: "Dúvida sobre comissões",
-      status: "em_andamento",
-      lastMessage: "Obrigado pelo esclarecimento!",
-      updatedAt: "Há 2 horas",
-      unreadCount: 1,
-    },
-    {
-      id: "2",
-      subject: "Problema com link de afiliado",
-      status: "aberto",
-      lastMessage: "Meu link não está rastreando...",
-      updatedAt: "Há 1 dia",
-      unreadCount: 0,
-    },
-    {
-      id: "3",
-      subject: "Solicitação de materiais",
-      status: "resolvido",
-      lastMessage: "Perfeito, muito obrigado!",
-      updatedAt: "Há 3 dias",
-      unreadCount: 0,
-    },
-  ]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  const [messages, setMessages] = useState<Record<string, Message[]>>({
-    "1": [
-      {
-        id: "1",
-        content: "Olá! Tenho uma dúvida sobre como são calculadas as comissões do programa de afiliados.",
-        sender: "user",
-        timestamp: "10:30",
-        read: true,
-      },
-      {
-        id: "2",
-        content: "Olá! Obrigado por entrar em contato. As comissões são calculadas com base no valor de depósito dos jogadores que você indicou. Para cada plataforma, existe uma porcentagem específica. Você pode verificar os detalhes na página de Comissões.",
-        sender: "support",
-        timestamp: "10:35",
-        read: true,
-      },
-      {
-        id: "3",
-        content: "Obrigado pelo esclarecimento!",
-        sender: "user",
-        timestamp: "10:40",
-        read: true,
-      },
-      {
-        id: "4",
-        content: "Por nada! Se tiver mais alguma dúvida, estou à disposição. 😊",
-        sender: "support",
-        timestamp: "10:42",
-        read: false,
-      },
-    ],
-    "2": [
-      {
-        id: "1",
-        content: "Meu link não está rastreando os cliques corretamente. Já verifiquei várias vezes.",
-        sender: "user",
-        timestamp: "Ontem 14:20",
-        read: true,
-      },
-    ],
-    "3": [
-      {
-        id: "1",
-        content: "Gostaria de solicitar materiais de divulgação para minhas redes sociais.",
-        sender: "user",
-        timestamp: "20/01 09:15",
-        read: true,
-      },
-      {
-        id: "2",
-        content: "Claro! Enviamos para seu email os banners e materiais promocionais. Qualquer dúvida, estamos aqui!",
-        sender: "support",
-        timestamp: "20/01 10:00",
-        read: true,
-      },
-      {
-        id: "3",
-        content: "Perfeito, muito obrigado!",
-        sender: "user",
-        timestamp: "20/01 10:30",
-        read: true,
-      },
-    ],
-  });
+  const [messages, setMessages] = useState<Record<string, Message[]>>({});
 
   const sendMessage = () => {
     if (!newMessage.trim() || !selectedTicket) return;
