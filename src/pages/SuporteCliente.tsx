@@ -320,51 +320,9 @@ const SuporteCliente = () => {
         )}
 
         {/* Chat Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
-          {/* Tickets List */}
-          <Card className="bg-card/80 border-border/50 overflow-hidden">
-            <div className="p-4 border-b border-border/50">
-              <h2 className="font-display font-bold text-foreground">
-                Seus Tickets
-              </h2>
-            </div>
-            <div className="overflow-y-auto h-[calc(100%-60px)]">
-              {tickets.map((ticket) => (
-                <button
-                  key={ticket.id}
-                  onClick={() => setSelectedTicket(ticket.id)}
-                  className={`w-full p-4 text-left border-b border-border/30 hover:bg-muted/30 transition-all ${
-                    selectedTicket === ticket.id ? "bg-muted/50" : ""
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium text-foreground text-sm line-clamp-1">
-                      {ticket.subject}
-                    </h3>
-                    {ticket.unreadCount > 0 && (
-                      <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
-                        {ticket.unreadCount}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-muted-foreground text-xs line-clamp-1 mb-2">
-                    {ticket.lastMessage}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(ticket.status)}`}>
-                      {getStatusText(ticket.status)}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {ticket.updatedAt}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </Card>
-
+        <div className="h-[600px]">
           {/* Chat Area */}
-          <Card className="bg-card/80 border-border/50 lg:col-span-2 flex flex-col overflow-hidden">
+          <Card className="bg-card/80 border-border/50 flex flex-col overflow-hidden h-full">
             {selectedTicket ? (
               <>
                 {/* Chat Header */}
