@@ -1,6 +1,5 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { ExternalLink, Shield, Zap, Globe, Check } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ExternalLink, Shield, Zap, Globe, Check, ArrowLeft, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import logoBrasilbet from "@/assets/logo-brasilbet.png";
@@ -52,105 +51,109 @@ const platforms = [
 const Plataformas = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 via-transparent to-transparent" />
-        <div className="container mx-auto relative z-10 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary text-xs font-semibold mb-4 uppercase tracking-widest border border-primary/30">
-            Parceiros Premium
-          </span>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            Nossas <span className="text-gradient-gold">Plataformas</span>
+      {/* Header */}
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <Crown className="w-8 h-8 text-secondary" />
+            <span className="text-xl font-display font-bold text-gradient-gold">
+              iAfiliado
+            </span>
+          </Link>
+          <Link to="/dashboard">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Voltar ao Dashboard</span>
+              <span className="sm:hidden">Voltar</span>
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">
+            <span className="text-foreground">Nossas </span>
+            <span className="text-gradient-neon">Plataformas</span>
           </h1>
-          <p className="text-muted-foreground text-base max-w-xl mx-auto">
+          <p className="text-muted-foreground">
             Trabalhe com as melhores casas de apostas e maximize seus ganhos
           </p>
         </div>
-      </section>
 
-      {/* Trust Badges */}
-      <section className="py-6 px-4 border-y border-border/30">
-        <div className="container mx-auto">
-          <div className="flex flex-wrap justify-center gap-8 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Shield className="w-4 h-4 text-primary" />
-              <span>Licenciadas e Regulamentadas</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Zap className="w-4 h-4 text-primary" />
-              <span>Pagamentos Garantidos</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Globe className="w-4 h-4 text-primary" />
-              <span>Alcance Global</span>
-            </div>
+        {/* Trust Badges */}
+        <div className="flex flex-wrap gap-6 mb-8 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Shield className="w-4 h-4 text-primary" />
+            <span>Licenciadas e Regulamentadas</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Zap className="w-4 h-4 text-primary" />
+            <span>Pagamentos Garantidos</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Globe className="w-4 h-4 text-primary" />
+            <span>Alcance Global</span>
           </div>
         </div>
-      </section>
 
-      {/* Platforms Grid */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {platforms.map((platform, index) => (
-              <div
-                key={index}
-                className="relative bg-card/80 rounded-xl p-6 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02]"
-              >
-                {/* Logo */}
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden p-2">
-                    <img
-                      src={platform.logo} 
-                      alt={`Logo ${platform.name}`} 
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-display font-bold text-foreground">
-                      {platform.name}
-                    </h3>
-                  </div>
+        {/* Platforms Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {platforms.map((platform, index) => (
+            <div
+              key={index}
+              className="relative bg-card/80 rounded-xl p-6 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02]"
+            >
+              {/* Logo */}
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden p-2">
+                  <img 
+                    src={platform.logo} 
+                    alt={`Logo ${platform.name}`} 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-
-                {/* Commission */}
-                <div className="mb-5 p-4 bg-muted/30 rounded-lg border border-border/30">
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Comissão</span>
-                  <div className="text-2xl font-display font-bold text-gradient-gold">
-                    {platform.commission}
-                  </div>
+                <div>
+                  <h3 className="text-xl font-display font-bold text-foreground">
+                    {platform.name}
+                  </h3>
                 </div>
-
-                {/* Features */}
-                <ul className="space-y-2.5 mb-6">
-                  {platform.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-3 h-3 text-primary" />
-                      </div>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  variant="neonOutline" 
-                  className="w-full h-10 text-xs font-semibold uppercase tracking-wide"
-                >
-                  Acessar
-                  <ExternalLink className="w-3.5 h-3.5 ml-1" />
-                </Button>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-12 px-4 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
-        <div className="container mx-auto text-center">
+              {/* Commission */}
+              <div className="mb-5 p-4 bg-muted/30 rounded-lg border border-border/30">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Comissão</span>
+                <div className="text-2xl font-display font-bold text-gradient-gold">
+                  {platform.commission}
+                </div>
+              </div>
+
+              {/* Features */}
+              <ul className="space-y-2.5 mb-6">
+                {platform.features.map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <Button 
+                variant="neonOutline" 
+                className="w-full h-10 text-xs font-semibold uppercase tracking-wide"
+              >
+                Acessar
+                <ExternalLink className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Section */}
+        <div className="mt-12 text-center py-8 px-6 bg-card/50 rounded-xl border border-border/50">
           <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
             Não encontrou sua <span className="text-gradient-gold">plataforma</span>?
           </h2>
@@ -158,14 +161,12 @@ const Plataformas = () => {
             Entre em contato conosco e solicite a inclusão de novas casas parceiras.
           </p>
           <Button variant="neonOutline" size="lg" asChild className="h-11">
-            <a href="/suporte">
+            <Link to="/suporte">
               Falar com Suporte
-            </a>
+            </Link>
           </Button>
         </div>
-      </section>
-
-      <Footer />
+      </main>
     </div>
   );
 };
