@@ -22,7 +22,6 @@ const platforms = [
     logo: logoBetmgm,
     commission: "R$100 de CPA",
     features: ["BaseLine R$25", "Pagamento Mensal", "Suporte 24h"],
-    featured: true,
   },
   {
     name: "LuvaBet",
@@ -98,22 +97,12 @@ const Plataformas = () => {
             {platforms.map((platform, index) => (
               <div
                 key={index}
-                className={`relative bg-card/80 rounded-xl p-6 border transition-all duration-300 hover:scale-[1.02] ${
-                  platform.featured 
-                    ? "border-secondary/50" 
-                    : "border-border/50 hover:border-primary/50"
-                }`}
+                className="relative bg-card/80 rounded-xl p-6 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02]"
               >
-                {platform.featured && (
-                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-gold rounded-full text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
-                    Destaque
-                  </div>
-                )}
-
                 {/* Logo */}
                 <div className="flex items-center gap-4 mb-5">
                   <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden p-2">
-                    <img 
+                    <img
                       src={platform.logo} 
                       alt={`Logo ${platform.name}`} 
                       className="w-full h-full object-contain"
@@ -147,7 +136,7 @@ const Plataformas = () => {
                 </ul>
 
                 <Button 
-                  variant={platform.featured ? "neon" : "neonOutline"} 
+                  variant="neonOutline" 
                   className="w-full h-10 text-xs font-semibold uppercase tracking-wide"
                 >
                   Acessar
