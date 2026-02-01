@@ -3,47 +3,48 @@ import Footer from "@/components/Footer";
 import { ExternalLink, Shield, Zap, Globe, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import logoBrasilbet from "@/assets/logo-brasilbet.png";
+import logoBetmgm from "@/assets/logo-betmgm.png";
+import logoLuvabet from "@/assets/logo-luvabet.png";
+import logoBigbet from "@/assets/logo-bigbet.png";
+import logoBetmgmPro from "@/assets/logo-betmgm-pro.png";
+import logoSeubet from "@/assets/logo-seubet.png";
+
 const platforms = [
   {
     name: "BrasilBet",
-    initials: "BB",
-    color: "from-green-500 to-green-700",
+    logo: logoBrasilbet,
     commission: "11% dos depósitos",
     features: ["Pagamento Semanal", "Saque rápido", "Suporte 24h"],
   },
   {
     name: "BetMGM",
-    initials: "BM",
-    color: "from-amber-500 to-orange-600",
+    logo: logoBetmgm,
     commission: "R$100 de CPA",
     features: ["BaseLine R$25", "Pagamento Mensal", "Suporte 24h"],
     featured: true,
   },
   {
     name: "LuvaBet",
-    initials: "LB",
-    color: "from-purple-500 to-purple-700",
+    logo: logoLuvabet,
     commission: "11% dos depósitos",
     features: ["Pagamento Semanal", "Saque rápido", "Suporte 24h"],
   },
   {
     name: "BigBet",
-    initials: "BG",
-    color: "from-blue-500 to-blue-700",
+    logo: logoBigbet,
     commission: "10% dos Depósitos",
     features: ["BaseLine R$25", "Suporte 24h"],
   },
   {
     name: "BetMGM Pro",
-    initials: "BP",
-    color: "from-rose-500 to-rose-700",
+    logo: logoBetmgmPro,
     commission: "R$80 de CPA",
     features: ["BaseLine R$25", "Pagamento Semanal", "Suporte 24h"],
   },
   {
     name: "SeuBet",
-    initials: "SB",
-    color: "from-cyan-500 to-teal-600",
+    logo: logoSeubet,
     commission: "60% de Rev Share",
     features: ["Pagamento Mensal"],
   },
@@ -111,8 +112,12 @@ const Plataformas = () => {
 
                 {/* Logo */}
                 <div className="flex items-center gap-4 mb-5">
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${platform.color} flex items-center justify-center shadow-lg`}>
-                    <span className="text-white font-bold text-lg font-display">{platform.initials}</span>
+                  <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden p-2">
+                    <img 
+                      src={platform.logo} 
+                      alt={`Logo ${platform.name}`} 
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-display font-bold text-foreground">
