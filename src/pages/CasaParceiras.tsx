@@ -134,35 +134,35 @@ const CasaParceiras = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-12 px-4 relative overflow-hidden">
+      <section className="pt-32 pb-8 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-8">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 uppercase tracking-wider">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary text-xs font-semibold mb-4 uppercase tracking-widest border border-primary/30">
               Vitrine de Parceiros
             </span>
-            <h1 className="text-4xl md:text-6xl font-display font-bold mb-6">
-              Casas <span className="text-gradient-neon">Parceiras</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+              Casas <span className="text-gradient-gold">Parceiras</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">
               Acesse as melhores casas de apostas do mercado de acordo com seu plano
             </p>
           </div>
 
           {/* Current Plan Card */}
-          <Card className="max-w-md mx-auto bg-gradient-card border-secondary/30">
-            <CardHeader className="text-center pb-2">
-              <CardDescription>Seu plano atual</CardDescription>
-              <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-                <CurrentPlanIcon className={`w-6 h-6 ${currentPlan?.color}`} />
+          <Card className="max-w-sm mx-auto bg-card/50 border-border/50 backdrop-blur-sm">
+            <CardHeader className="text-center pb-2 pt-4">
+              <CardDescription className="text-xs text-muted-foreground">Seu plano atual</CardDescription>
+              <CardTitle className="flex items-center justify-center gap-2 text-xl">
+                <CurrentPlanIcon className={`w-5 h-5 ${currentPlan?.color}`} />
                 <span className="text-gradient-gold">{currentPlan?.name}</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
+            <CardContent className="text-center pb-4">
+              <p className="text-xs text-muted-foreground mb-3">
                 Você tem acesso a {casas.filter(c => hasAccess(c.minPlan)).length} de {casas.length} casas parceiras
               </p>
-              <Button variant="neonOutline" size="sm" asChild>
+              <Button variant="neon" size="sm" asChild className="h-8 text-xs">
                 <a href="/planovips">Fazer Upgrade</a>
               </Button>
             </CardContent>
@@ -171,21 +171,23 @@ const CasaParceiras = () => {
       </section>
 
       {/* Plan Legend */}
-      <section className="py-6 px-4 border-y border-border/30">
+      <section className="py-4 px-4">
         <div className="container mx-auto">
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="flex flex-wrap justify-center gap-2">
             {plans.map((plan) => {
               const Icon = plan.icon;
+              const isCurrentPlan = userPlan === plan.id;
               return (
                 <div 
                   key={plan.id} 
-                  className={`flex items-center gap-2 ${userPlan === plan.id ? 'text-foreground' : 'text-muted-foreground'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                    isCurrentPlan 
+                      ? 'bg-primary/20 border-primary/50 text-foreground' 
+                      : 'bg-transparent border-border/30 text-muted-foreground'
+                  }`}
                 >
-                  <Icon className={`w-5 h-5 ${plan.color}`} />
+                  <Icon className={`w-4 h-4 ${plan.color}`} />
                   <span className="text-sm font-medium">{plan.name}</span>
-                  {userPlan === plan.id && (
-                    <Badge variant="secondary" className="text-xs">Atual</Badge>
-                  )}
                 </div>
               );
             })}
@@ -194,105 +196,108 @@ const CasaParceiras = () => {
       </section>
 
       {/* Casas Grid */}
-      <section className="py-16 px-4">
+      <section className="py-8 px-4">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {casas.map((casa, index) => {
               const hasAccessToCasa = hasAccess(casa.minPlan);
               
               return (
                 <div
                   key={index}
-                  className={`relative bg-gradient-card rounded-2xl p-6 border transition-all duration-300 ${
+                  className={`relative bg-card/80 rounded-xl p-5 border transition-all duration-300 ${
                     hasAccessToCasa 
                       ? casa.popular 
-                        ? "border-secondary/50 glow-border hover:scale-[1.02]" 
-                        : "border-border/50 hover:border-primary/50 hover:scale-[1.02]"
-                      : "border-border/30 opacity-60"
+                        ? "border-secondary/50 hover:border-secondary" 
+                        : "border-border/50 hover:border-primary/50"
+                      : "border-border/30"
                   }`}
                 >
                   {/* Popular Badge */}
                   {casa.popular && hasAccessToCasa && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-gold rounded-full text-xs font-bold text-primary-foreground uppercase">
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-gold rounded-full text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
                       Mais Popular
                     </div>
                   )}
 
                   {/* Lock Overlay */}
                   {!hasAccessToCasa && (
-                    <div className="absolute inset-0 bg-background/60 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] rounded-xl flex items-center justify-center z-10">
                       <div className="text-center p-4">
-                        <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground mb-2">Requer plano</p>
+                        <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                          <Lock className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-2">Requer plano</p>
                         {getPlanBadge(casa.minPlan)}
                       </div>
                     </div>
                   )}
 
-                  {/* Plan Required Badge */}
-                  <div className="flex justify-between items-start mb-4">
+                  {/* Header with badges */}
+                  <div className="flex justify-between items-start mb-3">
                     {getPlanBadge(casa.minPlan)}
                     {hasAccessToCasa && (
-                      <Badge variant="outline" className="text-primary border-primary">
+                      <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] px-2 py-0.5">
                         <Check className="w-3 h-3 mr-1" />
                         Liberado
                       </Badge>
                     )}
                   </div>
 
-                  <div className="mb-4">
-                    <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                  {/* Platform name and description */}
+                  <div className="mb-3">
+                    <h3 className="text-xl font-display font-bold text-foreground mb-1">
                       {casa.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                       {casa.description}
                     </p>
                   </div>
 
                   {/* Rating */}
-                  <div className="flex items-center gap-1 mb-4">
+                  <div className="flex items-center gap-0.5 mb-3">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${
+                        className={`w-3.5 h-3.5 ${
                           i < casa.rating
                             ? "text-secondary fill-secondary"
-                            : "text-muted-foreground"
+                            : "text-muted-foreground/30"
                         }`}
                       />
                     ))}
                   </div>
 
                   {/* Commission */}
-                  <div className="mb-4 p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Comissão até</span>
-                    <div className="text-3xl font-display font-bold text-gradient-gold">
+                  <div className="mb-3">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Comissão até</span>
+                    <div className="text-2xl font-display font-bold text-gradient-gold">
                       {casa.commission}
                     </div>
                   </div>
 
                   {/* Details */}
-                  <div className="space-y-2 mb-4 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Depósito mínimo:</span>
-                      <span className="text-foreground font-semibold">{casa.minDeposit}</span>
+                  <div className="space-y-1.5 mb-3 text-xs border-t border-border/30 pt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Depósito mínimo</span>
+                      <span className="text-foreground font-medium bg-muted/30 px-2 py-0.5 rounded">{casa.minDeposit}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Pagamentos:</span>
-                      <span className="text-foreground text-xs">{casa.paymentMethods.join(", ")}</span>
+                    <div className="flex justify-between items-start">
+                      <span className="text-muted-foreground">Pagamentos</span>
+                      <span className="text-foreground text-[10px] text-right max-w-[120px] bg-muted/30 px-2 py-0.5 rounded">{casa.paymentMethods.join(", ")}</span>
                     </div>
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-2 mb-6">
+                  <ul className="space-y-1.5 mb-4 border-t border-border/30 pt-3">
                     {casa.features.slice(0, 3).map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
                     {casa.features.length > 3 && (
-                      <li className="text-xs text-muted-foreground">
+                      <li className="text-[10px] text-muted-foreground/70 pl-3">
                         +{casa.features.length - 3} mais recursos
                       </li>
                     )}
@@ -300,17 +305,17 @@ const CasaParceiras = () => {
 
                   <Button 
                     variant={hasAccessToCasa ? (casa.popular ? "neon" : "neonOutline") : "outline"} 
-                    className="w-full"
+                    className="w-full h-9 text-xs font-semibold uppercase tracking-wide"
                     disabled={!hasAccessToCasa}
                   >
                     {hasAccessToCasa ? (
                       <>
                         Acessar
-                        <ExternalLink className="w-4 h-4" />
+                        <ExternalLink className="w-3.5 h-3.5 ml-1" />
                       </>
                     ) : (
                       <>
-                        <Lock className="w-4 h-4" />
+                        <Lock className="w-3.5 h-3.5 mr-1" />
                         Bloqueado
                       </>
                     )}
@@ -323,17 +328,17 @@ const CasaParceiras = () => {
       </section>
 
       {/* Upgrade CTA */}
-      <section className="py-16 px-4 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
+      <section className="py-12 px-4">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-display font-bold mb-4">
+          <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
             Quer acesso a <span className="text-gradient-gold">todas as casas</span>?
           </h2>
-          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+          <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
             Faça upgrade para o plano Diamante e tenha acesso completo a todas as casas parceiras com as melhores comissões do mercado.
           </p>
-          <Button variant="gold" size="lg" asChild>
+          <Button variant="gold" size="lg" asChild className="h-11">
             <a href="/planovips">
-              <Diamond className="w-5 h-5" />
+              <Diamond className="w-4 h-4 mr-2" />
               Ver Planos VIP
             </a>
           </Button>
