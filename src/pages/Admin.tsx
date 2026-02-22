@@ -21,6 +21,13 @@ import {
   X,
   LayoutDashboard,
   ArrowLeft,
+  ClipboardList,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail,
+  Phone,
+  User,
 } from "lucide-react";
 import {
   Dialog,
@@ -64,6 +71,16 @@ interface UserWallet {
   ultimaAtividade: string;
 }
 
+interface Solicitacao {
+  id: string;
+  nome: string;
+  login: string;
+  email: string;
+  telefone: string;
+  dataCadastro: string;
+  status: "pendente" | "aprovado" | "rejeitado";
+}
+
 // ── Mock Data ────────────────────────────────────────────────────────────
 const mockCasinos: Casino[] = [
   { id: "1", nome: "BrasilBet", comissaoCPA: 150, comissaoRevShare: 30, status: "ativo", urlAfiliado: "https://brasilbet.com/aff" },
@@ -98,9 +115,19 @@ const mockWallets: UserWallet[] = [
   { id: "6", usuario: "Fernanda Oliveira", email: "fer@email.com", saldoDisponivel: 5200, saldoPendente: 2100, totalSacado: 22000, ultimaAtividade: "18/02/2026" },
 ];
 
+const mockSolicitacoes: Solicitacao[] = [
+  { id: "1", nome: "Lucas Ferreira", login: "lucasf", email: "lucas@email.com", telefone: "(11) 99999-1111", dataCadastro: "20/02/2026", status: "pendente" },
+  { id: "2", nome: "Bruna Almeida", login: "brunaa", email: "bruna@email.com", telefone: "(21) 98888-2222", dataCadastro: "19/02/2026", status: "pendente" },
+  { id: "3", nome: "Rafael Mendes", login: "rafaelm", email: "rafael@email.com", telefone: "(31) 97777-3333", dataCadastro: "19/02/2026", status: "pendente" },
+  { id: "4", nome: "Camila Rocha", login: "camilar", email: "camila@email.com", telefone: "(41) 96666-4444", dataCadastro: "18/02/2026", status: "aprovado" },
+  { id: "5", nome: "Thiago Nunes", login: "thiagon", email: "thiago@email.com", telefone: "(51) 95555-5555", dataCadastro: "17/02/2026", status: "rejeitado" },
+  { id: "6", nome: "Juliana Costa", login: "julianac", email: "juliana@email.com", telefone: "(61) 94444-6666", dataCadastro: "17/02/2026", status: "pendente" },
+];
+
 // ── Sidebar nav items ────────────────────────────────────────────────────
 const sidebarItems = [
   { id: "overview", label: "Visão Geral", icon: LayoutDashboard },
+  { id: "solicitacoes", label: "Solicitações", icon: ClipboardList },
   { id: "casinos", label: "Casinos", icon: Building2 },
   { id: "entradas", label: "Entradas", icon: Calendar },
   { id: "carteiras", label: "Carteiras", icon: Wallet },
@@ -125,6 +152,13 @@ const Admin = () => {
   const [searchWallets, setSearchWallets] = useState("");
   const [searchCasinos, setSearchCasinos] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("todos");
+
+  // Solicitações state
+  const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>(mockSolicitacoes);
+  const [searchSolicitacoes, setSearchSolicitacoes] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [detailDialog, setDetailDialog] = useState(false);
+  const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -159,6 +193,24 @@ const Admin = () => {
   const toggleCasinoStatus = (id: string) => setCasinos(prev => prev.map(c => c.id === id ? { ...c, status: c.status === "ativo" ? "inativo" : "ativo" } : c));
   const deleteCasino = (id: string) => { setCasinos(prev => prev.filter(c => c.id !== id)); toast({ title: "Casino removido!" }); };
 
+  // ── Solicitações actions ─────────────────────────────────
+  const aprovarSolicitacao = (id: string) => {
+    setSolicitacoes(prev => prev.map(s => s.id === id ? { ...s, status: "aprovado" } : s));
+    toast({ title: "Solicitação aprovada!", description: "O afiliado foi aprovado e pode acessar a plataforma." });
+    setDetailDialog(false);
+  };
+
+  const rejeitarSolicitacao = (id: string) => {
+    setSolicitacoes(prev => prev.map(s => s.id === id ? { ...s, status: "rejeitado" } : s));
+    toast({ title: "Solicitação rejeitada", description: "O cadastro foi rejeitado." });
+    setDetailDialog(false);
+  };
+
+  const openDetail = (s: Solicitacao) => {
+    setSelectedSolicitacao(s);
+    setDetailDialog(true);
+  };
+
   // ── Filtered data ─────────────────────────────────
   const filteredCasinos = casinos.filter(c => c.nome.toLowerCase().includes(searchCasinos.toLowerCase()));
   const filteredEntradas = mockEntradas.filter(e => {
@@ -167,6 +219,12 @@ const Admin = () => {
     return matchSearch && matchTipo;
   });
   const filteredWallets = mockWallets.filter(w => w.usuario.toLowerCase().includes(searchWallets.toLowerCase()) || w.email.toLowerCase().includes(searchWallets.toLowerCase()));
+  const filteredSolicitacoes = solicitacoes.filter(s => {
+    const matchSearch = s.nome.toLowerCase().includes(searchSolicitacoes.toLowerCase()) || s.email.toLowerCase().includes(searchSolicitacoes.toLowerCase());
+    const matchStatus = filtroStatus === "todos" || s.status === filtroStatus;
+    return matchSearch && matchStatus;
+  });
+  const pendentesCount = solicitacoes.filter(s => s.status === "pendente").length;
 
   // ── Global stats ─────────────────────────────────
   const totalDepositos = mockEntradas.filter(e => e.tipo === "deposito").reduce((s, e) => s + e.valor, 0);
@@ -235,7 +293,12 @@ const Admin = () => {
               }`}
             >
               <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
+              <span className="flex-1 text-left">{item.label}</span>
+              {item.id === "solicitacoes" && pendentesCount > 0 && (
+                <span className="ml-auto text-xs font-bold bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full">
+                  {pendentesCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -306,8 +369,9 @@ const Admin = () => {
               </div>
 
               {/* Quick access cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
+                  { id: "solicitacoes", icon: ClipboardList, title: "Solicitações", desc: `${pendentesCount} pendentes`, color: "text-secondary" },
                   { id: "casinos", icon: Building2, title: "Casinos", desc: `${casinos.length} casinos cadastrados`, color: "text-primary" },
                   { id: "entradas", icon: Calendar, title: "Entradas", desc: `${mockEntradas.length} registros`, color: "text-secondary" },
                   { id: "carteiras", icon: Wallet, title: "Carteiras", desc: `${mockWallets.length} usuários`, color: "text-primary" },
@@ -330,6 +394,80 @@ const Admin = () => {
                 ))}
               </div>
             </>
+          )}
+
+          {/* ── Solicitações ─────────────────────────── */}
+          {activeTab === "solicitacoes" && (
+            <Card className="bg-card/80 border-border/50 p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-foreground">Solicitações de Cadastro</h2>
+                  <p className="text-sm text-muted-foreground">{pendentesCount} pendente{pendentesCount !== 1 ? "s" : ""} de análise</p>
+                </div>
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input placeholder="Buscar por nome ou email..." value={searchSolicitacoes} onChange={e => setSearchSolicitacoes(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex items-center gap-2 mb-6 flex-wrap">
+                {["todos", "pendente", "aprovado", "rejeitado"].map(st => (
+                  <Button key={st} size="sm" variant={filtroStatus === st ? "default" : "outline"} onClick={() => setFiltroStatus(st)} className={filtroStatus === st ? "bg-primary text-primary-foreground" : ""}>
+                    {st === "todos" ? "Todos" : st.charAt(0).toUpperCase() + st.slice(1) + "s"}
+                  </Button>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                {filteredSolicitacoes.map(sol => (
+                  <div key={sol.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/50 hover:border-primary/30 transition-all gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        sol.status === "pendente" ? "bg-secondary/10" : sol.status === "aprovado" ? "bg-primary/10" : "bg-destructive/10"
+                      }`}>
+                        {sol.status === "pendente" ? <Clock className="w-5 h-5 text-secondary" /> : sol.status === "aprovado" ? <CheckCircle className="w-5 h-5 text-primary" /> : <XCircle className="w-5 h-5 text-destructive" />}
+                      </div>
+                      <div>
+                        <p className="font-bold text-foreground">{sol.nome}</p>
+                        <p className="text-xs text-muted-foreground">{sol.email} • {sol.telefone}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Login</p>
+                        <p className="text-sm font-medium text-foreground">@{sol.login}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Data</p>
+                        <p className="text-sm text-muted-foreground">{sol.dataCadastro}</p>
+                      </div>
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                        sol.status === "pendente" ? "bg-secondary/15 text-secondary" : sol.status === "aprovado" ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
+                      }`}>
+                        {sol.status.charAt(0).toUpperCase() + sol.status.slice(1)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => openDetail(sol)} title="Ver detalhes">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        {sol.status === "pendente" && (
+                          <>
+                            <Button variant="ghost" size="icon" onClick={() => aprovarSolicitacao(sol.id)} className="text-primary hover:text-primary" title="Aprovar">
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => rejeitarSolicitacao(sol.id)} className="text-destructive hover:text-destructive" title="Rejeitar">
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {filteredSolicitacoes.length === 0 && <p className="text-center py-8 text-muted-foreground">Nenhuma solicitação encontrada.</p>}
+              </div>
+            </Card>
           )}
 
           {/* ── Casinos ──────────────────────────────── */}
@@ -445,6 +583,64 @@ const Admin = () => {
           )}
         </main>
       </div>
+
+      {/* ── Solicitação Detail Dialog ────────────── */}
+      <Dialog open={detailDialog} onOpenChange={setDetailDialog}>
+        <DialogContent className="bg-card border-border/50">
+          <DialogHeader>
+            <DialogTitle className="font-display">Detalhes da Solicitação</DialogTitle>
+            <DialogDescription>Informações do cadastro enviado pelo usuário.</DialogDescription>
+          </DialogHeader>
+          {selectedSolicitacao && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><User className="w-3 h-3" /> Nome Completo</p>
+                  <p className="text-sm font-medium text-foreground">{selectedSolicitacao.nome}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><User className="w-3 h-3" /> Login</p>
+                  <p className="text-sm font-medium text-foreground">@{selectedSolicitacao.login}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Mail className="w-3 h-3" /> Email</p>
+                  <p className="text-sm font-medium text-foreground">{selectedSolicitacao.email}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> Telefone</p>
+                  <p className="text-sm font-medium text-foreground">{selectedSolicitacao.telefone}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> Data do Cadastro</p>
+                  <p className="text-sm font-medium text-foreground">{selectedSolicitacao.dataCadastro}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Status</p>
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                    selectedSolicitacao.status === "pendente" ? "bg-secondary/15 text-secondary" : selectedSolicitacao.status === "aprovado" ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
+                  }`}>
+                    {selectedSolicitacao.status.charAt(0).toUpperCase() + selectedSolicitacao.status.slice(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          {selectedSolicitacao?.status === "pendente" && (
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => selectedSolicitacao && rejeitarSolicitacao(selectedSolicitacao.id)} className="text-destructive border-destructive/30 hover:bg-destructive/10 gap-2">
+                <XCircle className="w-4 h-4" /> Rejeitar
+              </Button>
+              <Button variant="neon" onClick={() => selectedSolicitacao && aprovarSolicitacao(selectedSolicitacao.id)} className="gap-2">
+                <CheckCircle className="w-4 h-4" /> Aprovar
+              </Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* ── Casino Dialog ────────────────────────────── */}
       <Dialog open={casinoDialog} onOpenChange={setCasinoDialog}>
