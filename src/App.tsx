@@ -19,6 +19,7 @@ import SuporteCliente from "./pages/SuporteCliente";
 import PlanosVip from "./pages/PlanosVip";
 import CasaParceiras from "./pages/CasaParceiras";
 import Entradas from "./pages/Entradas";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -44,8 +45,9 @@ const App = () => (
           <Route path="/suporte-cliente" element={<SuporteCliente />} />
           <Route path="/planovips" element={<PlanosVip />} />
           <Route path="/casa-parceiras" element={<CasaParceiras />} />
-          <Route path="/entradas" element={<Entradas />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+           <Route path="/entradas" element={<Entradas />} />
+           <Route path="/admin" element={<Admin />} />
+           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
