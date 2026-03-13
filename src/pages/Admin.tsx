@@ -556,11 +556,11 @@ const Admin = () => {
               {/* Seletores de filtro */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
                 <Select value={filtroCasa} onValueChange={setFiltroCasa}>
-                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
-                    <Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
+                  <SelectTrigger className="w-full sm:w-48 bg-primary/10 border-primary/30 text-foreground focus:ring-primary">
+                    <Building2 className="w-4 h-4 mr-2 text-primary" />
                     <SelectValue placeholder="Casa" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-primary/30">
                     <SelectItem value="todos">Todas as Casas</SelectItem>
                     {casasUnicas.map(casa => (
                       <SelectItem key={casa} value={casa}>{casa}</SelectItem>
@@ -569,11 +569,11 @@ const Admin = () => {
                 </Select>
 
                 <Select value={filtroPeriodo} onValueChange={setFiltroPeriodo}>
-                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
-                    <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+                  <SelectTrigger className="w-full sm:w-48 bg-primary/10 border-primary/30 text-foreground focus:ring-primary">
+                    <Calendar className="w-4 h-4 mr-2 text-primary" />
                     <SelectValue placeholder="Período" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-primary/30">
                     <SelectItem value="todos">Todo Período</SelectItem>
                     <SelectItem value="hoje">Hoje</SelectItem>
                     <SelectItem value="7dias">Últimos 7 dias</SelectItem>
