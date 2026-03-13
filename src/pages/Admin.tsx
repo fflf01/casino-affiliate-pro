@@ -232,7 +232,7 @@ const Admin = () => {
   const filteredWallets = mockWallets.filter(w => w.usuario.toLowerCase().includes(searchWallets.toLowerCase()) || w.email.toLowerCase().includes(searchWallets.toLowerCase()));
   const filteredSolicitacoes = solicitacoes.filter(s => {
     const matchSearch = s.nome.toLowerCase().includes(searchSolicitacoes.toLowerCase()) || s.email.toLowerCase().includes(searchSolicitacoes.toLowerCase());
-    const matchStatus = filtroStatus === "todos" || s.status === filtroStatus;
+    const matchStatus = filtroStatusSol === "todos" || s.status === filtroStatusSol;
     return matchSearch && matchStatus;
   });
   const pendentesCount = solicitacoes.filter(s => s.status === "pendente").length;
