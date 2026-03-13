@@ -223,11 +223,28 @@ const Admin = () => {
   };
 
   // ── Filtered data ─────────────────────────────────
+  // Period filter helper
+  const matchPeriodo = (dataStr: string) => {
+    if (filtroPeriodo === "todos") return true;
+    const parts = dataStr.split("/");
+    const d = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+    if (filtroPeriodo === "hoje") return diffDays === 0;
+    if (filtroPeriodo === "7dias") return diffDays <= 7;
+    if (filtroPeriodo === "30dias") return diffDays <= 30;
+    if (filtroPeriodo === "90dias") return diffDays <= 90;
+    return true;
+  };
+
+  const casasUnicas = [...new Set(mockEntradas.map(e => e.casa))];
+
   const filteredCasinos = casinos.filter(c => c.nome.toLowerCase().includes(searchCasinos.toLowerCase()));
   const filteredEntradas = mockEntradas.filter(e => {
     const matchSearch = e.usuario.toLowerCase().includes(searchEntradas.toLowerCase()) || e.casa.toLowerCase().includes(searchEntradas.toLowerCase()) || e.email.toLowerCase().includes(searchEntradas.toLowerCase());
     const matchTipo = filtroTipo === "todos" || e.tipo === filtroTipo;
-    return matchSearch && matchTipo;
+    const matchCasa = filtroCasa === "todos" || e.casa === filtroCasa;
+    return matchSearch && matchTipo && matchCasa && matchPeriodo(e.data);
   });
   const filteredWallets = mockWallets.filter(w => w.usuario.toLowerCase().includes(searchWallets.toLowerCase()) || w.email.toLowerCase().includes(searchWallets.toLowerCase()));
   const filteredSolicitacoes = solicitacoes.filter(s => {
