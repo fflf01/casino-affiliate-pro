@@ -552,6 +552,37 @@ const Admin = () => {
                   <Input placeholder="Buscar por usuário ou casa..." value={searchEntradas} onChange={e => setSearchEntradas(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
                 </div>
               </div>
+
+              {/* Seletores de filtro */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+                <Select value={filtroCasa} onValueChange={setFiltroCasa}>
+                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
+                    <Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Casa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todas as Casas</SelectItem>
+                    {casasUnicas.map(casa => (
+                      <SelectItem key={casa} value={casa}>{casa}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filtroPeriodo} onValueChange={setFiltroPeriodo}>
+                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
+                    <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Período" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todo Período</SelectItem>
+                    <SelectItem value="hoje">Hoje</SelectItem>
+                    <SelectItem value="7dias">Últimos 7 dias</SelectItem>
+                    <SelectItem value="30dias">Últimos 30 dias</SelectItem>
+                    <SelectItem value="90dias">Últimos 90 dias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex items-center gap-2 mb-6 flex-wrap">
                 {["todos", "deposito", "cpa", "ftd", "revshare"].map(tipo => (
                   <Button key={tipo} size="sm" variant={filtroTipo === tipo ? "default" : "outline"} onClick={() => setFiltroTipo(tipo)} className={filtroTipo === tipo ? "bg-primary text-primary-foreground" : ""}>
