@@ -424,7 +424,7 @@ const Admin = () => {
               {/* Status Filter */}
               <div className="flex items-center gap-2 mb-6 flex-wrap">
                 {["todos", "pendente", "aprovado", "rejeitado"].map(st => (
-                  <Button key={st} size="sm" variant={filtroStatus === st ? "default" : "outline"} onClick={() => setFiltroStatus(st)} className={filtroStatus === st ? "bg-primary text-primary-foreground" : ""}>
+                  <Button key={st} size="sm" variant={filtroStatusSol === st ? "default" : "outline"} onClick={() => setFiltroStatusSol(st)} className={filtroStatusSol === st ? "bg-primary text-primary-foreground" : ""}>
                     {st === "todos" ? "Todos" : st.charAt(0).toUpperCase() + st.slice(1) + "s"}
                   </Button>
                 ))}
