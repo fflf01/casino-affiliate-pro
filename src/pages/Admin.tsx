@@ -163,9 +163,13 @@ const Admin = () => {
   // Solicitações state
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>(mockSolicitacoes);
   const [searchSolicitacoes, setSearchSolicitacoes] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [filtroStatusSol, setFiltroStatusSol] = useState("todos");
   const [detailDialog, setDetailDialog] = useState(false);
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
+
+  // Filtros seletores
+  const [filtroCasa, setFiltroCasa] = useState("todos");
+  const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
