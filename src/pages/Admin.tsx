@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Crown,
   Plus,
   Search,
@@ -156,9 +163,13 @@ const Admin = () => {
   // Solicitações state
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>(mockSolicitacoes);
   const [searchSolicitacoes, setSearchSolicitacoes] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [filtroStatusSol, setFiltroStatusSol] = useState("todos");
   const [detailDialog, setDetailDialog] = useState(false);
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
+
+  // Filtros seletores
+  const [filtroCasa, setFiltroCasa] = useState("todos");
+  const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -212,16 +223,33 @@ const Admin = () => {
   };
 
   // ── Filtered data ─────────────────────────────────
+  // Period filter helper
+  const matchPeriodo = (dataStr: string) => {
+    if (filtroPeriodo === "todos") return true;
+    const parts = dataStr.split("/");
+    const d = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+    if (filtroPeriodo === "hoje") return diffDays === 0;
+    if (filtroPeriodo === "7dias") return diffDays <= 7;
+    if (filtroPeriodo === "30dias") return diffDays <= 30;
+    if (filtroPeriodo === "90dias") return diffDays <= 90;
+    return true;
+  };
+
+  const casasUnicas = [...new Set(mockEntradas.map(e => e.casa))];
+
   const filteredCasinos = casinos.filter(c => c.nome.toLowerCase().includes(searchCasinos.toLowerCase()));
   const filteredEntradas = mockEntradas.filter(e => {
     const matchSearch = e.usuario.toLowerCase().includes(searchEntradas.toLowerCase()) || e.casa.toLowerCase().includes(searchEntradas.toLowerCase()) || e.email.toLowerCase().includes(searchEntradas.toLowerCase());
     const matchTipo = filtroTipo === "todos" || e.tipo === filtroTipo;
-    return matchSearch && matchTipo;
+    const matchCasa = filtroCasa === "todos" || e.casa === filtroCasa;
+    return matchSearch && matchTipo && matchCasa && matchPeriodo(e.data);
   });
   const filteredWallets = mockWallets.filter(w => w.usuario.toLowerCase().includes(searchWallets.toLowerCase()) || w.email.toLowerCase().includes(searchWallets.toLowerCase()));
   const filteredSolicitacoes = solicitacoes.filter(s => {
     const matchSearch = s.nome.toLowerCase().includes(searchSolicitacoes.toLowerCase()) || s.email.toLowerCase().includes(searchSolicitacoes.toLowerCase());
-    const matchStatus = filtroStatus === "todos" || s.status === filtroStatus;
+    const matchStatus = filtroStatusSol === "todos" || s.status === filtroStatusSol;
     return matchSearch && matchStatus;
   });
   const pendentesCount = solicitacoes.filter(s => s.status === "pendente").length;
@@ -413,7 +441,7 @@ const Admin = () => {
               {/* Status Filter */}
               <div className="flex items-center gap-2 mb-6 flex-wrap">
                 {["todos", "pendente", "aprovado", "rejeitado"].map(st => (
-                  <Button key={st} size="sm" variant={filtroStatus === st ? "default" : "outline"} onClick={() => setFiltroStatus(st)} className={filtroStatus === st ? "bg-primary text-primary-foreground" : ""}>
+                  <Button key={st} size="sm" variant={filtroStatusSol === st ? "default" : "outline"} onClick={() => setFiltroStatusSol(st)} className={filtroStatusSol === st ? "bg-primary text-primary-foreground" : ""}>
                     {st === "todos" ? "Todos" : st.charAt(0).toUpperCase() + st.slice(1) + "s"}
                   </Button>
                 ))}
@@ -524,6 +552,37 @@ const Admin = () => {
                   <Input placeholder="Buscar por usuário ou casa..." value={searchEntradas} onChange={e => setSearchEntradas(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
                 </div>
               </div>
+
+              {/* Seletores de filtro */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+                <Select value={filtroCasa} onValueChange={setFiltroCasa}>
+                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
+                    <Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Casa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todas as Casas</SelectItem>
+                    {casasUnicas.map(casa => (
+                      <SelectItem key={casa} value={casa}>{casa}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filtroPeriodo} onValueChange={setFiltroPeriodo}>
+                  <SelectTrigger className="w-full sm:w-48 bg-muted/30 border-border/50">
+                    <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Período" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todo Período</SelectItem>
+                    <SelectItem value="hoje">Hoje</SelectItem>
+                    <SelectItem value="7dias">Últimos 7 dias</SelectItem>
+                    <SelectItem value="30dias">Últimos 30 dias</SelectItem>
+                    <SelectItem value="90dias">Últimos 90 dias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex items-center gap-2 mb-6 flex-wrap">
                 {["todos", "deposito", "cpa", "ftd", "revshare"].map(tipo => (
                   <Button key={tipo} size="sm" variant={filtroTipo === tipo ? "default" : "outline"} onClick={() => setFiltroTipo(tipo)} className={filtroTipo === tipo ? "bg-primary text-primary-foreground" : ""}>
