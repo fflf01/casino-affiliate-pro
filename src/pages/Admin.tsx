@@ -90,16 +90,16 @@ interface Solicitacao {
   status: "pendente" | "aprovado" | "rejeitado";
 }
 
-interface JogadorEnvio {
+interface RendimentoAfiliado {
   id: string;
-  nomeJogador: string;
-  emailJogador: string;
-  documento: string;
+  afiliado: string;
   casa: string;
-  valorDeposito: number;
-  dataDeposito: string;
-  observacoes: string;
-  enviadoPor: string;
+  data: string;
+  clicks: number;
+  registros: number;
+  ftds: number;
+  qftds: number;
+  depositosTotal: number;
   enviadoEm: string;
 }
 
@@ -153,7 +153,7 @@ const sidebarItems = [
   { id: "casinos", label: "Casinos", icon: Building2 },
   { id: "entradas", label: "Entradas", icon: Calendar },
   { id: "carteiras", label: "Carteiras", icon: Wallet },
-  { id: "jogadores", label: "Jogadores", icon: Gamepad2 },
+  { id: "rendimentos", label: "Rendimentos", icon: Gamepad2 },
 ];
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -187,19 +187,19 @@ const Admin = () => {
   const [filtroCasa, setFiltroCasa] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
 
-  // Jogadores state
-  const [jogadores, setJogadores] = useState<JogadorEnvio[]>([]);
-  const [jogadorForm, setJogadorForm] = useState({
-    nomeJogador: "",
-    emailJogador: "",
-    documento: "",
+  // Rendimentos state
+  const [rendimentos, setRendimentos] = useState<RendimentoAfiliado[]>([]);
+  const [rendimentoForm, setRendimentoForm] = useState({
+    afiliado: "",
     casa: "",
-    valorDeposito: "",
-    dataDeposito: "",
-    observacoes: "",
-    enviadoPor: "",
+    data: "",
+    clicks: "",
+    registros: "",
+    ftds: "",
+    qftds: "",
+    depositosTotal: "",
   });
-  const [searchJogadores, setSearchJogadores] = useState("");
+  const [searchRendimentos, setSearchRendimentos] = useState("");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -302,38 +302,37 @@ const Admin = () => {
     if (isMobile) setSidebarOpen(false);
   };
 
-  // ── Jogadores submit ─────────────────────────────────
-  const submitJogador = () => {
-    if (!jogadorForm.nomeJogador.trim() || !jogadorForm.casa.trim()) {
-      toast({ title: "Erro", description: "Nome do jogador e casa são obrigatórios.", variant: "destructive" });
+  // ── Rendimentos submit ─────────────────────────────────
+  const submitRendimento = () => {
+    if (!rendimentoForm.afiliado.trim() || !rendimentoForm.casa.trim() || !rendimentoForm.data.trim()) {
+      toast({ title: "Erro", description: "Afiliado, casa e data são obrigatórios.", variant: "destructive" });
       return;
     }
-    const novo: JogadorEnvio = {
+    const novo: RendimentoAfiliado = {
       id: String(Date.now()),
-      nomeJogador: jogadorForm.nomeJogador,
-      emailJogador: jogadorForm.emailJogador,
-      documento: jogadorForm.documento,
-      casa: jogadorForm.casa,
-      valorDeposito: Number(jogadorForm.valorDeposito) || 0,
-      dataDeposito: jogadorForm.dataDeposito || new Date().toLocaleDateString("pt-BR"),
-      observacoes: jogadorForm.observacoes,
-      enviadoPor: jogadorForm.enviadoPor || "Admin",
+      afiliado: rendimentoForm.afiliado,
+      casa: rendimentoForm.casa,
+      data: rendimentoForm.data,
+      clicks: Number(rendimentoForm.clicks) || 0,
+      registros: Number(rendimentoForm.registros) || 0,
+      ftds: Number(rendimentoForm.ftds) || 0,
+      qftds: Number(rendimentoForm.qftds) || 0,
+      depositosTotal: Number(rendimentoForm.depositosTotal) || 0,
       enviadoEm: new Date().toLocaleString("pt-BR"),
     };
-    setJogadores(prev => [novo, ...prev]);
-    toast({ title: "Dados enviados!", description: `Informações de ${novo.nomeJogador} registradas.` });
-    setJogadorForm({ nomeJogador: "", emailJogador: "", documento: "", casa: "", valorDeposito: "", dataDeposito: "", observacoes: "", enviadoPor: "" });
+    setRendimentos(prev => [novo, ...prev]);
+    toast({ title: "Rendimento registrado!", description: `Dados de ${novo.afiliado} (${novo.casa}) salvos.` });
+    setRendimentoForm({ afiliado: "", casa: "", data: "", clicks: "", registros: "", ftds: "", qftds: "", depositosTotal: "" });
   };
 
-  const removeJogador = (id: string) => {
-    setJogadores(prev => prev.filter(j => j.id !== id));
+  const removeRendimento = (id: string) => {
+    setRendimentos(prev => prev.filter(r => r.id !== id));
     toast({ title: "Registro removido!" });
   };
 
-  const filteredJogadores = jogadores.filter(j =>
-    j.nomeJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
-    j.emailJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
-    j.casa.toLowerCase().includes(searchJogadores.toLowerCase())
+  const filteredRendimentos = rendimentos.filter(r =>
+    r.afiliado.toLowerCase().includes(searchRendimentos.toLowerCase()) ||
+    r.casa.toLowerCase().includes(searchRendimentos.toLowerCase())
   );
 
   return (
@@ -705,40 +704,32 @@ const Admin = () => {
             </Card>
           )}
 
-          {/* ── Jogadores ────────────────────────────── */}
-          {activeTab === "jogadores" && (
+          {/* ── Rendimentos dos Afiliados ────────────────────────────── */}
+          {activeTab === "rendimentos" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
-                  <span className="text-foreground">Envio de </span>
-                  <span className="text-gradient-neon">Dados de Jogadores</span>
+                  <span className="text-foreground">Rendimentos dos </span>
+                  <span className="text-gradient-neon">Afiliados</span>
                 </h2>
-                <p className="text-sm text-muted-foreground">Cadastre informações de jogadores para análise da equipe administrativa.</p>
+                <p className="text-sm text-muted-foreground">Alimente os dados de performance dos afiliados (cliques, registros, FTDs e depósitos).</p>
               </div>
 
               <Card className="bg-card/80 border-border/50 p-6">
                 <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Gamepad2 className="w-5 h-5 text-primary" /> Novo Envio
+                  <Gamepad2 className="w-5 h-5 text-primary" /> Novo Lançamento
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-muted-foreground mb-1">Nome do Jogador *</label>
-                    <Input placeholder="Ex: João Silva" value={jogadorForm.nomeJogador} onChange={e => setJogadorForm(f => ({ ...f, nomeJogador: e.target.value }))} className="bg-muted/30 border-border/50" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm text-muted-foreground mb-1">Afiliado *</label>
+                    <Input placeholder="Nome ou login do afiliado" value={rendimentoForm.afiliado} onChange={e => setRendimentoForm(f => ({ ...f, afiliado: e.target.value }))} className="bg-muted/30 border-border/50" />
                   </div>
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-1">Email</label>
-                    <Input type="email" placeholder="jogador@email.com" value={jogadorForm.emailJogador} onChange={e => setJogadorForm(f => ({ ...f, emailJogador: e.target.value }))} className="bg-muted/30 border-border/50" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-muted-foreground mb-1">CPF / Documento</label>
-                    <Input placeholder="000.000.000-00" value={jogadorForm.documento} onChange={e => setJogadorForm(f => ({ ...f, documento: e.target.value }))} className="bg-muted/30 border-border/50" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-muted-foreground mb-1">Casa de Apostas *</label>
-                    <Select value={jogadorForm.casa} onValueChange={v => setJogadorForm(f => ({ ...f, casa: v }))}>
+                    <label className="block text-sm text-muted-foreground mb-1">Casa *</label>
+                    <Select value={rendimentoForm.casa} onValueChange={v => setRendimentoForm(f => ({ ...f, casa: v }))}>
                       <SelectTrigger className="bg-primary/10 border-primary/30 text-foreground focus:ring-primary">
                         <Building2 className="w-4 h-4 mr-2 text-primary" />
-                        <SelectValue placeholder="Selecione a casa" />
+                        <SelectValue placeholder="Casa" />
                       </SelectTrigger>
                       <SelectContent className="bg-card border-primary/30">
                         {casinos.map(c => (
@@ -748,31 +739,33 @@ const Admin = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-1">Valor do Depósito (R$)</label>
-                    <Input type="number" placeholder="0,00" value={jogadorForm.valorDeposito} onChange={e => setJogadorForm(f => ({ ...f, valorDeposito: e.target.value }))} className="bg-muted/30 border-border/50" />
+                    <label className="block text-sm text-muted-foreground mb-1">Data *</label>
+                    <Input placeholder="DD/MM/AAAA" value={rendimentoForm.data} onChange={e => setRendimentoForm(f => ({ ...f, data: e.target.value }))} className="bg-muted/30 border-border/50" />
                   </div>
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-1">Data do Depósito</label>
-                    <Input placeholder="DD/MM/AAAA" value={jogadorForm.dataDeposito} onChange={e => setJogadorForm(f => ({ ...f, dataDeposito: e.target.value }))} className="bg-muted/30 border-border/50" />
+                    <label className="block text-sm text-muted-foreground mb-1">Clicks</label>
+                    <Input type="number" placeholder="0" value={rendimentoForm.clicks} onChange={e => setRendimentoForm(f => ({ ...f, clicks: e.target.value }))} className="bg-muted/30 border-border/50" />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm text-muted-foreground mb-1">Enviado por</label>
-                    <Input placeholder="Seu nome / afiliado" value={jogadorForm.enviadoPor} onChange={e => setJogadorForm(f => ({ ...f, enviadoPor: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Registros</label>
+                    <Input type="number" placeholder="0" value={rendimentoForm.registros} onChange={e => setRendimentoForm(f => ({ ...f, registros: e.target.value }))} className="bg-muted/30 border-border/50" />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm text-muted-foreground mb-1">Observações</label>
-                    <textarea
-                      placeholder="Informações adicionais sobre o jogador..."
-                      value={jogadorForm.observacoes}
-                      onChange={e => setJogadorForm(f => ({ ...f, observacoes: e.target.value }))}
-                      rows={3}
-                      className="w-full rounded-md bg-muted/30 border border-border/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">FTDs</label>
+                    <Input type="number" placeholder="0" value={rendimentoForm.ftds} onChange={e => setRendimentoForm(f => ({ ...f, ftds: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">QFTDs</label>
+                    <Input type="number" placeholder="0" value={rendimentoForm.qftds} onChange={e => setRendimentoForm(f => ({ ...f, qftds: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div className="md:col-span-2 lg:col-span-4">
+                    <label className="block text-sm text-muted-foreground mb-1">Depósitos Total (R$)</label>
+                    <Input type="number" placeholder="0,00" value={rendimentoForm.depositosTotal} onChange={e => setRendimentoForm(f => ({ ...f, depositosTotal: e.target.value }))} className="bg-muted/30 border-border/50" />
                   </div>
                 </div>
                 <div className="flex justify-end mt-4">
-                  <Button variant="neon" onClick={submitJogador} className="gap-2">
-                    <Send className="w-4 h-4" /> Enviar Dados
+                  <Button variant="neon" onClick={submitRendimento} className="gap-2">
+                    <Send className="w-4 h-4" /> Lançar Rendimento
                   </Button>
                 </div>
               </Card>
@@ -780,41 +773,47 @@ const Admin = () => {
               <Card className="bg-card/80 border-border/50 p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                   <div>
-                    <h3 className="text-lg font-display font-bold text-foreground">Jogadores Enviados</h3>
-                    <p className="text-sm text-muted-foreground">{jogadores.length} registro{jogadores.length !== 1 ? "s" : ""}</p>
+                    <h3 className="text-lg font-display font-bold text-foreground">Rendimentos Lançados</h3>
+                    <p className="text-sm text-muted-foreground">{rendimentos.length} registro{rendimentos.length !== 1 ? "s" : ""}</p>
                   </div>
                   <div className="relative w-full sm:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input placeholder="Buscar jogador..." value={searchJogadores} onChange={e => setSearchJogadores(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
+                    <Input placeholder="Buscar afiliado ou casa..." value={searchRendimentos} onChange={e => setSearchRendimentos(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
                   </div>
                 </div>
-                <div className="space-y-3">
-                  {filteredJogadores.map(j => (
-                    <div key={j.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/50 hover:border-primary/30 transition-all gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Gamepad2 className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-foreground">{j.nomeJogador}</p>
-                          <p className="text-xs text-muted-foreground">{j.emailJogador || "—"} {j.documento && `• ${j.documento}`}</p>
-                          {j.observacoes && <p className="text-xs text-muted-foreground italic mt-1 max-w-md">"{j.observacoes}"</p>}
-                        </div>
+                <div className="overflow-x-auto">
+                  <div className="grid grid-cols-8 gap-2 px-4 py-3 bg-muted/20 rounded-t-lg text-xs font-medium text-muted-foreground min-w-[900px]">
+                    <span>Afiliado</span>
+                    <span>Casa</span>
+                    <span>Data</span>
+                    <span className="text-right">Clicks</span>
+                    <span className="text-right">Registros</span>
+                    <span className="text-right">FTDs</span>
+                    <span className="text-right">QFTDs</span>
+                    <span className="text-right">Depósitos</span>
+                  </div>
+                  <div className="space-y-1 min-w-[900px]">
+                    {filteredRendimentos.map(r => (
+                      <div key={r.id} className="grid grid-cols-8 gap-2 px-4 py-3 border-b border-border/30 hover:bg-muted/10 transition-colors items-center group">
+                        <span className="text-sm font-medium text-foreground truncate">{r.afiliado}</span>
+                        <span className="text-sm text-foreground truncate">{r.casa}</span>
+                        <span className="text-sm text-muted-foreground">{r.data}</span>
+                        <span className="text-sm text-right text-foreground">{r.clicks}</span>
+                        <span className="text-sm text-right text-foreground">{r.registros}</span>
+                        <span className="text-sm text-right text-foreground">{r.ftds}</span>
+                        <span className="text-sm text-right text-foreground">{r.qftds}</span>
+                        <span className="text-sm text-right font-bold text-primary flex items-center justify-end gap-2">
+                          {fmt(r.depositosTotal)}
+                          <Button variant="ghost" size="icon" onClick={() => removeRendimento(r.id)} className="text-destructive hover:text-destructive opacity-0 group-hover:opacity-100 h-6 w-6">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </span>
                       </div>
-                      <div className="flex flex-wrap items-center gap-4">
-                        <div className="text-center"><p className="text-xs text-muted-foreground">Casa</p><p className="text-sm font-medium text-foreground">{j.casa}</p></div>
-                        <div className="text-center"><p className="text-xs text-muted-foreground">Depósito</p><p className="text-sm font-bold text-primary">{fmt(j.valorDeposito)}</p></div>
-                        <div className="text-center"><p className="text-xs text-muted-foreground">Data</p><p className="text-sm text-muted-foreground">{j.dataDeposito}</p></div>
-                        <div className="text-center"><p className="text-xs text-muted-foreground">Por</p><p className="text-sm text-muted-foreground">{j.enviadoPor}</p></div>
-                        <Button variant="ghost" size="icon" onClick={() => removeJogador(j.id)} className="text-destructive hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {filteredJogadores.length === 0 && (
-                    <p className="text-center py-8 text-muted-foreground">Nenhum jogador enviado ainda.</p>
-                  )}
+                    ))}
+                    {filteredRendimentos.length === 0 && (
+                      <p className="text-center py-8 text-muted-foreground">Nenhum rendimento lançado ainda.</p>
+                    )}
+                  </div>
                 </div>
               </Card>
             </div>
