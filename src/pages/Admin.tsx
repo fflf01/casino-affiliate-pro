@@ -90,16 +90,16 @@ interface Solicitacao {
   status: "pendente" | "aprovado" | "rejeitado";
 }
 
-interface JogadorEnvio {
+interface RendimentoAfiliado {
   id: string;
-  nomeJogador: string;
-  emailJogador: string;
-  documento: string;
+  afiliado: string;
   casa: string;
-  valorDeposito: number;
-  dataDeposito: string;
-  observacoes: string;
-  enviadoPor: string;
+  data: string;
+  clicks: number;
+  registros: number;
+  ftds: number;
+  qftds: number;
+  depositosTotal: number;
   enviadoEm: string;
 }
 
@@ -153,7 +153,7 @@ const sidebarItems = [
   { id: "casinos", label: "Casinos", icon: Building2 },
   { id: "entradas", label: "Entradas", icon: Calendar },
   { id: "carteiras", label: "Carteiras", icon: Wallet },
-  { id: "jogadores", label: "Jogadores", icon: Gamepad2 },
+  { id: "rendimentos", label: "Rendimentos", icon: Gamepad2 },
 ];
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -187,19 +187,19 @@ const Admin = () => {
   const [filtroCasa, setFiltroCasa] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
 
-  // Jogadores state
-  const [jogadores, setJogadores] = useState<JogadorEnvio[]>([]);
-  const [jogadorForm, setJogadorForm] = useState({
-    nomeJogador: "",
-    emailJogador: "",
-    documento: "",
+  // Rendimentos state
+  const [rendimentos, setRendimentos] = useState<RendimentoAfiliado[]>([]);
+  const [rendimentoForm, setRendimentoForm] = useState({
+    afiliado: "",
     casa: "",
-    valorDeposito: "",
-    dataDeposito: "",
-    observacoes: "",
-    enviadoPor: "",
+    data: "",
+    clicks: "",
+    registros: "",
+    ftds: "",
+    qftds: "",
+    depositosTotal: "",
   });
-  const [searchJogadores, setSearchJogadores] = useState("");
+  const [searchRendimentos, setSearchRendimentos] = useState("");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -302,38 +302,37 @@ const Admin = () => {
     if (isMobile) setSidebarOpen(false);
   };
 
-  // ── Jogadores submit ─────────────────────────────────
-  const submitJogador = () => {
-    if (!jogadorForm.nomeJogador.trim() || !jogadorForm.casa.trim()) {
-      toast({ title: "Erro", description: "Nome do jogador e casa são obrigatórios.", variant: "destructive" });
+  // ── Rendimentos submit ─────────────────────────────────
+  const submitRendimento = () => {
+    if (!rendimentoForm.afiliado.trim() || !rendimentoForm.casa.trim() || !rendimentoForm.data.trim()) {
+      toast({ title: "Erro", description: "Afiliado, casa e data são obrigatórios.", variant: "destructive" });
       return;
     }
-    const novo: JogadorEnvio = {
+    const novo: RendimentoAfiliado = {
       id: String(Date.now()),
-      nomeJogador: jogadorForm.nomeJogador,
-      emailJogador: jogadorForm.emailJogador,
-      documento: jogadorForm.documento,
-      casa: jogadorForm.casa,
-      valorDeposito: Number(jogadorForm.valorDeposito) || 0,
-      dataDeposito: jogadorForm.dataDeposito || new Date().toLocaleDateString("pt-BR"),
-      observacoes: jogadorForm.observacoes,
-      enviadoPor: jogadorForm.enviadoPor || "Admin",
+      afiliado: rendimentoForm.afiliado,
+      casa: rendimentoForm.casa,
+      data: rendimentoForm.data,
+      clicks: Number(rendimentoForm.clicks) || 0,
+      registros: Number(rendimentoForm.registros) || 0,
+      ftds: Number(rendimentoForm.ftds) || 0,
+      qftds: Number(rendimentoForm.qftds) || 0,
+      depositosTotal: Number(rendimentoForm.depositosTotal) || 0,
       enviadoEm: new Date().toLocaleString("pt-BR"),
     };
-    setJogadores(prev => [novo, ...prev]);
-    toast({ title: "Dados enviados!", description: `Informações de ${novo.nomeJogador} registradas.` });
-    setJogadorForm({ nomeJogador: "", emailJogador: "", documento: "", casa: "", valorDeposito: "", dataDeposito: "", observacoes: "", enviadoPor: "" });
+    setRendimentos(prev => [novo, ...prev]);
+    toast({ title: "Rendimento registrado!", description: `Dados de ${novo.afiliado} (${novo.casa}) salvos.` });
+    setRendimentoForm({ afiliado: "", casa: "", data: "", clicks: "", registros: "", ftds: "", qftds: "", depositosTotal: "" });
   };
 
-  const removeJogador = (id: string) => {
-    setJogadores(prev => prev.filter(j => j.id !== id));
+  const removeRendimento = (id: string) => {
+    setRendimentos(prev => prev.filter(r => r.id !== id));
     toast({ title: "Registro removido!" });
   };
 
-  const filteredJogadores = jogadores.filter(j =>
-    j.nomeJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
-    j.emailJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
-    j.casa.toLowerCase().includes(searchJogadores.toLowerCase())
+  const filteredRendimentos = rendimentos.filter(r =>
+    r.afiliado.toLowerCase().includes(searchRendimentos.toLowerCase()) ||
+    r.casa.toLowerCase().includes(searchRendimentos.toLowerCase())
   );
 
   return (
