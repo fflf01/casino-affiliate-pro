@@ -35,6 +35,8 @@ import {
   Mail,
   Phone,
   User,
+  Gamepad2,
+  Send,
 } from "lucide-react";
 import {
   Dialog,
@@ -88,6 +90,19 @@ interface Solicitacao {
   status: "pendente" | "aprovado" | "rejeitado";
 }
 
+interface JogadorEnvio {
+  id: string;
+  nomeJogador: string;
+  emailJogador: string;
+  documento: string;
+  casa: string;
+  valorDeposito: number;
+  dataDeposito: string;
+  observacoes: string;
+  enviadoPor: string;
+  enviadoEm: string;
+}
+
 // ── Mock Data ────────────────────────────────────────────────────────────
 const mockCasinos: Casino[] = [
   { id: "1", nome: "BrasilBet", comissaoCPA: 150, comissaoRevShare: 30, status: "ativo", urlAfiliado: "https://brasilbet.com/aff" },
@@ -138,6 +153,7 @@ const sidebarItems = [
   { id: "casinos", label: "Casinos", icon: Building2 },
   { id: "entradas", label: "Entradas", icon: Calendar },
   { id: "carteiras", label: "Carteiras", icon: Wallet },
+  { id: "jogadores", label: "Jogadores", icon: Gamepad2 },
 ];
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -170,6 +186,20 @@ const Admin = () => {
   // Filtros seletores
   const [filtroCasa, setFiltroCasa] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
+
+  // Jogadores state
+  const [jogadores, setJogadores] = useState<JogadorEnvio[]>([]);
+  const [jogadorForm, setJogadorForm] = useState({
+    nomeJogador: "",
+    emailJogador: "",
+    documento: "",
+    casa: "",
+    valorDeposito: "",
+    dataDeposito: "",
+    observacoes: "",
+    enviadoPor: "",
+  });
+  const [searchJogadores, setSearchJogadores] = useState("");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -271,6 +301,40 @@ const Admin = () => {
     setActiveTab(id);
     if (isMobile) setSidebarOpen(false);
   };
+
+  // ── Jogadores submit ─────────────────────────────────
+  const submitJogador = () => {
+    if (!jogadorForm.nomeJogador.trim() || !jogadorForm.casa.trim()) {
+      toast({ title: "Erro", description: "Nome do jogador e casa são obrigatórios.", variant: "destructive" });
+      return;
+    }
+    const novo: JogadorEnvio = {
+      id: String(Date.now()),
+      nomeJogador: jogadorForm.nomeJogador,
+      emailJogador: jogadorForm.emailJogador,
+      documento: jogadorForm.documento,
+      casa: jogadorForm.casa,
+      valorDeposito: Number(jogadorForm.valorDeposito) || 0,
+      dataDeposito: jogadorForm.dataDeposito || new Date().toLocaleDateString("pt-BR"),
+      observacoes: jogadorForm.observacoes,
+      enviadoPor: jogadorForm.enviadoPor || "Admin",
+      enviadoEm: new Date().toLocaleString("pt-BR"),
+    };
+    setJogadores(prev => [novo, ...prev]);
+    toast({ title: "Dados enviados!", description: `Informações de ${novo.nomeJogador} registradas.` });
+    setJogadorForm({ nomeJogador: "", emailJogador: "", documento: "", casa: "", valorDeposito: "", dataDeposito: "", observacoes: "", enviadoPor: "" });
+  };
+
+  const removeJogador = (id: string) => {
+    setJogadores(prev => prev.filter(j => j.id !== id));
+    toast({ title: "Registro removido!" });
+  };
+
+  const filteredJogadores = jogadores.filter(j =>
+    j.nomeJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
+    j.emailJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
+    j.casa.toLowerCase().includes(searchJogadores.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-background flex">
