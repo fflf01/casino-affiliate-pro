@@ -35,6 +35,8 @@ import {
   Mail,
   Phone,
   User,
+  Gamepad2,
+  Send,
 } from "lucide-react";
 import {
   Dialog,
@@ -88,6 +90,19 @@ interface Solicitacao {
   status: "pendente" | "aprovado" | "rejeitado";
 }
 
+interface JogadorEnvio {
+  id: string;
+  nomeJogador: string;
+  emailJogador: string;
+  documento: string;
+  casa: string;
+  valorDeposito: number;
+  dataDeposito: string;
+  observacoes: string;
+  enviadoPor: string;
+  enviadoEm: string;
+}
+
 // ── Mock Data ────────────────────────────────────────────────────────────
 const mockCasinos: Casino[] = [
   { id: "1", nome: "BrasilBet", comissaoCPA: 150, comissaoRevShare: 30, status: "ativo", urlAfiliado: "https://brasilbet.com/aff" },
@@ -138,6 +153,7 @@ const sidebarItems = [
   { id: "casinos", label: "Casinos", icon: Building2 },
   { id: "entradas", label: "Entradas", icon: Calendar },
   { id: "carteiras", label: "Carteiras", icon: Wallet },
+  { id: "jogadores", label: "Jogadores", icon: Gamepad2 },
 ];
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -170,6 +186,20 @@ const Admin = () => {
   // Filtros seletores
   const [filtroCasa, setFiltroCasa] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
+
+  // Jogadores state
+  const [jogadores, setJogadores] = useState<JogadorEnvio[]>([]);
+  const [jogadorForm, setJogadorForm] = useState({
+    nomeJogador: "",
+    emailJogador: "",
+    documento: "",
+    casa: "",
+    valorDeposito: "",
+    dataDeposito: "",
+    observacoes: "",
+    enviadoPor: "",
+  });
+  const [searchJogadores, setSearchJogadores] = useState("");
 
   const fmt = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
@@ -271,6 +301,40 @@ const Admin = () => {
     setActiveTab(id);
     if (isMobile) setSidebarOpen(false);
   };
+
+  // ── Jogadores submit ─────────────────────────────────
+  const submitJogador = () => {
+    if (!jogadorForm.nomeJogador.trim() || !jogadorForm.casa.trim()) {
+      toast({ title: "Erro", description: "Nome do jogador e casa são obrigatórios.", variant: "destructive" });
+      return;
+    }
+    const novo: JogadorEnvio = {
+      id: String(Date.now()),
+      nomeJogador: jogadorForm.nomeJogador,
+      emailJogador: jogadorForm.emailJogador,
+      documento: jogadorForm.documento,
+      casa: jogadorForm.casa,
+      valorDeposito: Number(jogadorForm.valorDeposito) || 0,
+      dataDeposito: jogadorForm.dataDeposito || new Date().toLocaleDateString("pt-BR"),
+      observacoes: jogadorForm.observacoes,
+      enviadoPor: jogadorForm.enviadoPor || "Admin",
+      enviadoEm: new Date().toLocaleString("pt-BR"),
+    };
+    setJogadores(prev => [novo, ...prev]);
+    toast({ title: "Dados enviados!", description: `Informações de ${novo.nomeJogador} registradas.` });
+    setJogadorForm({ nomeJogador: "", emailJogador: "", documento: "", casa: "", valorDeposito: "", dataDeposito: "", observacoes: "", enviadoPor: "" });
+  };
+
+  const removeJogador = (id: string) => {
+    setJogadores(prev => prev.filter(j => j.id !== id));
+    toast({ title: "Registro removido!" });
+  };
+
+  const filteredJogadores = jogadores.filter(j =>
+    j.nomeJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
+    j.emailJogador.toLowerCase().includes(searchJogadores.toLowerCase()) ||
+    j.casa.toLowerCase().includes(searchJogadores.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -639,6 +703,121 @@ const Admin = () => {
                 {filteredWallets.length === 0 && <p className="text-center py-8 text-muted-foreground">Nenhum usuário encontrado.</p>}
               </div>
             </Card>
+          )}
+
+          {/* ── Jogadores ────────────────────────────── */}
+          {activeTab === "jogadores" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
+                  <span className="text-foreground">Envio de </span>
+                  <span className="text-gradient-neon">Dados de Jogadores</span>
+                </h2>
+                <p className="text-sm text-muted-foreground">Cadastre informações de jogadores para análise da equipe administrativa.</p>
+              </div>
+
+              <Card className="bg-card/80 border-border/50 p-6">
+                <h3 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Gamepad2 className="w-5 h-5 text-primary" /> Novo Envio
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Nome do Jogador *</label>
+                    <Input placeholder="Ex: João Silva" value={jogadorForm.nomeJogador} onChange={e => setJogadorForm(f => ({ ...f, nomeJogador: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Email</label>
+                    <Input type="email" placeholder="jogador@email.com" value={jogadorForm.emailJogador} onChange={e => setJogadorForm(f => ({ ...f, emailJogador: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">CPF / Documento</label>
+                    <Input placeholder="000.000.000-00" value={jogadorForm.documento} onChange={e => setJogadorForm(f => ({ ...f, documento: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Casa de Apostas *</label>
+                    <Select value={jogadorForm.casa} onValueChange={v => setJogadorForm(f => ({ ...f, casa: v }))}>
+                      <SelectTrigger className="bg-primary/10 border-primary/30 text-foreground focus:ring-primary">
+                        <Building2 className="w-4 h-4 mr-2 text-primary" />
+                        <SelectValue placeholder="Selecione a casa" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-primary/30">
+                        {casinos.map(c => (
+                          <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Valor do Depósito (R$)</label>
+                    <Input type="number" placeholder="0,00" value={jogadorForm.valorDeposito} onChange={e => setJogadorForm(f => ({ ...f, valorDeposito: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-muted-foreground mb-1">Data do Depósito</label>
+                    <Input placeholder="DD/MM/AAAA" value={jogadorForm.dataDeposito} onChange={e => setJogadorForm(f => ({ ...f, dataDeposito: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm text-muted-foreground mb-1">Enviado por</label>
+                    <Input placeholder="Seu nome / afiliado" value={jogadorForm.enviadoPor} onChange={e => setJogadorForm(f => ({ ...f, enviadoPor: e.target.value }))} className="bg-muted/30 border-border/50" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm text-muted-foreground mb-1">Observações</label>
+                    <textarea
+                      placeholder="Informações adicionais sobre o jogador..."
+                      value={jogadorForm.observacoes}
+                      onChange={e => setJogadorForm(f => ({ ...f, observacoes: e.target.value }))}
+                      rows={3}
+                      className="w-full rounded-md bg-muted/30 border border-border/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <Button variant="neon" onClick={submitJogador} className="gap-2">
+                    <Send className="w-4 h-4" /> Enviar Dados
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="bg-card/80 border-border/50 p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h3 className="text-lg font-display font-bold text-foreground">Jogadores Enviados</h3>
+                    <p className="text-sm text-muted-foreground">{jogadores.length} registro{jogadores.length !== 1 ? "s" : ""}</p>
+                  </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input placeholder="Buscar jogador..." value={searchJogadores} onChange={e => setSearchJogadores(e.target.value)} className="pl-10 bg-muted/30 border-border/50" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {filteredJogadores.map(j => (
+                    <div key={j.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/50 hover:border-primary/30 transition-all gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Gamepad2 className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-foreground">{j.nomeJogador}</p>
+                          <p className="text-xs text-muted-foreground">{j.emailJogador || "—"} {j.documento && `• ${j.documento}`}</p>
+                          {j.observacoes && <p className="text-xs text-muted-foreground italic mt-1 max-w-md">"{j.observacoes}"</p>}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <div className="text-center"><p className="text-xs text-muted-foreground">Casa</p><p className="text-sm font-medium text-foreground">{j.casa}</p></div>
+                        <div className="text-center"><p className="text-xs text-muted-foreground">Depósito</p><p className="text-sm font-bold text-primary">{fmt(j.valorDeposito)}</p></div>
+                        <div className="text-center"><p className="text-xs text-muted-foreground">Data</p><p className="text-sm text-muted-foreground">{j.dataDeposito}</p></div>
+                        <div className="text-center"><p className="text-xs text-muted-foreground">Por</p><p className="text-sm text-muted-foreground">{j.enviadoPor}</p></div>
+                        <Button variant="ghost" size="icon" onClick={() => removeJogador(j.id)} className="text-destructive hover:text-destructive">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {filteredJogadores.length === 0 && (
+                    <p className="text-center py-8 text-muted-foreground">Nenhum jogador enviado ainda.</p>
+                  )}
+                </div>
+              </Card>
+            </div>
           )}
         </main>
       </div>
